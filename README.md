@@ -2,7 +2,7 @@
 
 ---
 
-Hecho por: David Medina, Andrea Sosa y Samuel Rodríguez
+## Hecho por: David Medina, Andrea Sosa y Samuel Rodríguez
 
 ## Wiki - Despliegue con ArgoCD
 
