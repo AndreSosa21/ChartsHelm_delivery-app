@@ -2,7 +2,7 @@ apiVersion: v2
 name: delivery-app
 description: Chart para la aplicación de gestión de pedidos (app + bd)
 type: application
-version: 0.1.9
+version: 0.1.10
 appVersion: "2.5.0"
 
 # Dependencias (subcharts)
