@@ -38,12 +38,13 @@ jobs:
           echo "New chart version: $NEW_VERSION"
         id: bump
 
-      # 5. Clonar el repo de Helm donde se suben los charts
-      - name: Checkout Helm repository
+      # 5. Clonar el repo de Helm en la rama gh-pages
+      - name: Checkout Helm repository (gh-pages)
         uses: actions/checkout@v3
         with:
           repository: AndreSosa21/helm_delivery-app
           path: helm-repo
+          ref: gh-pages
           token: ${{ secrets.HELM_CHARTS_PAT }}
 
       # 6. Empaquetar chart directamente en el repo de Helm
@@ -57,7 +58,7 @@ jobs:
           cd helm-repo
           helm repo index . --url https://andresosa21.github.io/helm_delivery-app/ --merge index.yaml
 
-      # 8. Commit y push al repo de Helm
+      # 8. Commit y push al repo de Helm en gh-pages
       - name: Commit and push Helm chart
         run: |
           cd helm-repo
