@@ -1,0 +1,60 @@
+apiVersion: v1
+entries:
+  delivery-app:
+  - apiVersion: v2
+    appVersion: f49af6ff8492ade208e0199577fe43aca65d705f
+    created: "2025-08-24T14:36:26.432567165Z"
+    dependencies:
+    - name: db
+      repository: file://charts/db
+      version: 0.1.1
+    description: Chart para la aplicación de gestión de pedidos (app + bd)
+    digest: 84dd2fc7c3c7940948266d650f82a0f3171d2ed3a17d8012b4572f865b5adf7c
+    name: delivery-app
+    type: application
+    urls:
+    - https://andresosa21.github.io/helm_delivery-app/delivery-app-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: 2.5.0
+    created: "2025-08-24T14:36:26.432193625Z"
+    dependencies:
+    - name: db
+      repository: file://charts/db
+      version: 0.1.1
+    description: Chart para la aplicación de gestión de pedidos (app + bd)
+    digest: 37169a111783699bcfb3ab98e806af53d2965cc17596de80ebfd09998db25a3f
+    name: delivery-app
+    type: application
+    urls:
+    - https://andresosa21.github.io/helm_delivery-app/delivery-app-0.1.8.tgz
+    version: 0.1.8
+  - apiVersion: v2
+    appVersion: 2.5.0
+    created: "2025-08-24T14:36:26.431733743Z"
+    dependencies:
+    - name: db
+      repository: file://charts/db
+      version: 0.1.1
+    description: Chart para la aplicación de gestión de pedidos (app + bd)
+    digest: 75512d6438d39e609d891f516a56641c1aef94f9a91cc07f7d984c4c0cfe6e30
+    name: delivery-app
+    type: application
+    urls:
+    - https://andresosa21.github.io/helm_delivery-app/delivery-app-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: 2.5.0
+    created: "2025-08-24T14:36:26.431234798Z"
+    dependencies:
+    - name: db
+      repository: file://charts/db
+      version: 0.1.1
+    description: Chart para la aplicación de gestión de pedidos (app + bd)
+    digest: adff36806c6efaee31ffd881f7323172918b7fe6897909f470d27e90456626e9
+    name: delivery-app
+    type: application
+    urls:
+    - https://andresosa21.github.io/helm_delivery-app/delivery-app-0.1.6.tgz
+    version: 0.1.6
+generated: "2025-08-24T14:36:26.430561957Z"
