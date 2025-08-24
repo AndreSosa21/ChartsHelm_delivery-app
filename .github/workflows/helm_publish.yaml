@@ -1,4 +1,4 @@
-name: CI/CD Helm Chart -> Helm Repo
+name: CI/CD Helm Chart + Docker + Auto-version
 
 on:
   push:
@@ -6,56 +6,78 @@ on:
       - main
 
 jobs:
-  package-and-publish:
+  build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Clonar el repo de charts
-      - name: Checkout charts repository
+      # 1. Clonar repositorio de la app
+      - name: Checkout application repository
         uses: actions/checkout@v3
 
-      # 2. Instalar Helm
-      - name: Install Helm
-        uses: azure/setup-helm@v3
+      # 2. Configurar Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-      # 3. Instalar yq para manipular YAML
+      # 3. Build y push de la imagen Docker
+      - name: Build and push Docker image
+        uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          image: andrea233/delivery-system
+          tags: ${{ github.sha }}
+          registry: docker.io
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 4. Instalar yq
       - name: Install yq
         run: |
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
-          yq --version
 
-      # 4. Incrementar versión del chart automáticamente
-      - name: Bump Chart version
+      # 5. Clonar repo de Helm
+      - name: Clone Helm repo
+        env:
+          GH_TOKEN: ${{ secrets.HELM_CHARTS_PAT }}
         run: |
-          CHART_PATH=delivery-app/delivery-app
-          VERSION=$(yq eval '.version' $CHART_PATH/Chart.yaml)
+          git clone https://$GH_TOKEN@github.com/AndreSosa21/helm_delivery-app.git helm-repo
+
+      # 6. Copiar chart desde el repo de charts
+      - name: Copy chart to Helm repo
+        run: |
+          cp -r ./delivery-app/delivery-app helm-repo/delivery-app
+
+      # 7. Incrementar versión del chart automáticamente
+      - name: Bump chart version
+        run: |
+          cd helm-repo/delivery-app
+          VERSION=$(yq eval '.version' Chart.yaml)
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
           PATCH=$((PATCH + 1))
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-          yq eval ".version = \"$NEW_VERSION\"" -i $CHART_PATH/Chart.yaml
-          yq eval ".appVersion = \"${GITHUB_SHA}\"" -i $CHART_PATH/Chart.yaml
+          yq eval ".version = \"$NEW_VERSION\"" -i Chart.yaml
+          yq eval ".appVersion = \"${GITHUB_SHA}\"" -i Chart.yaml
           echo "New chart version: $NEW_VERSION"
+          cd ../..
 
-      # 5. Empaquetar chart directamente en repo de Helm
+      # 8. Empaquetar Helm chart
       - name: Package Helm chart
         run: |
-          helm package ./delivery-app/delivery-app -d ../helm_delivery-app
-
-      # 6. Actualizar index.yaml en el repo de Helm
-      - name: Update Helm repo index
-        run: |
-          cd ../helm_delivery-app
+          cd helm-repo
+          helm package delivery-app -d .
           helm repo index . --url https://andresosa21.github.io/helm_delivery-app/ --merge index.yaml
+          cd ..
 
-      # 7. Commit y push al repo de Helm
-      - name: Commit and push Helm chart
+      # 9. Commit y push al repo de Helm
+      - name: Push Helm chart
+        env:
+          GH_TOKEN: ${{ secrets.HELM_CHARTS_PAT }}
         run: |
-          cd ../helm_delivery-app
+          cd helm-repo
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add *.tgz index.yaml
           git commit -m "Empaquetado delivery-app $NEW_VERSION"
           git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
