@@ -37,6 +37,14 @@ jobs:
           yq eval ".appVersion = \"${GITHUB_SHA}\"" -i $CHART_PATH/Chart.yaml
           echo "New chart version: $NEW_VERSION"
 
+      # 5. Clonar el repo de Helm donde se suben los charts
+      - name: Checkout Helm repository
+        uses: actions/checkout@v3
+        with:
+          repository: AndreSosa21/helm_delivery-app
+          path: helm-repo
+          token: ${{ secrets.HELM_CHARTS_PAT }}    
+
       # 5. Empaquetar chart directamente en repo de Helm
       - name: Package Helm chart
         run: |
