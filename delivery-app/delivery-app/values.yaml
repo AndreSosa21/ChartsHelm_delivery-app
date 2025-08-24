@@ -3,7 +3,7 @@ app:
   namespace: delivery-app
   image:
     repository: andrea233/delivery-system
-    tag: "latest"
+    tag: "2.5.0"
   replicas: 3
   port: 3000
   
