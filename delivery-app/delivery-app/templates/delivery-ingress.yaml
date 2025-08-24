@@ -1,0 +1,38 @@
+{{- if .Values.app.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- with .Values.global.labels }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.global.annotations }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: {{ .Values.app.ingress.className }}
+  rules:
+    - host: {{ .Values.app.ingress.host | quote }}
+      http:
+        paths:
+          # Backend API
+          - path: {{ .Values.app.ingress.apiPath }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ .Values.app.name }}
+                port:
+                  number: {{ .Values.app.service.port }}
+          # Frontend
+          - path: {{ .Values.app.ingress.frontendPath }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ .Values.app.name }}
+                port:
+                  number: {{ .Values.app.service.port }}
+{{- end }}

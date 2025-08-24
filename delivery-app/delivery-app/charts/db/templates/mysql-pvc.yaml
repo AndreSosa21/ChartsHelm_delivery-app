@@ -1,0 +1,14 @@
+{{- if .Values.global.db.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.global.db.persistence.name }}
+  namespace: delivery-app
+spec:
+  accessModes:
+    {{- toYaml .Values.global.db.persistence.accessModes | nindent 2 }}
+  resources:
+    requests:
+      storage: {{ .Values.global.db.persistence.size }}
+  storageClassName: {{ .Values.global.db.persistence.storageClass }}
+{{- end }}

@@ -1,0 +1,12 @@
+apiVersion: v2
+name: delivery-app
+description: Chart para la aplicación de gestión de pedidos (app + bd)
+type: application
+version: 0.1.8
+appVersion: "2.5.0"
+
+# Dependencias (subcharts)
+dependencies:
+  - name: db
+    version: 0.1.1
+    repository: "file://charts/db"

@@ -1,0 +1,6 @@
+dependencies:
+- name: db
+  repository: file://charts/db
+  version: 0.1.1
+digest: sha256:87eba44587fdcbf7376ef5697b75e0499376c24581a0c2a37fdfbbfdf31dcc76
+generated: "2025-08-22T19:47:10.0424351-05:00"

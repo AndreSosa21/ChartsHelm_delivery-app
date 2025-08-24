@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- with .Values.global.labels }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.global.annotations }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}
+    spec:
+      containers:
+      - name: {{ .Values.app.name }}
+        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+        ports:
+          - containerPort: {{ .Values.app.port }}
+        env:
+          
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.db.configMap.name }}
+                key: DB_HOST
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.db.configMap.name }}
+                key: DB_PORT
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.global.db.configMap.name }}
+                key: DB_NAME
+
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.db.secretName }}
+                key: MYSQL_ROOT_PASSWORD
+          
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.db.secretName }}
+                key: DB_USER
+          
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.db.secretName }}
+                key: DB_PASSWORD
+          
+        resources:
+          requests:
+            cpu: {{ .Values.app.resources.requests.cpu }}
+            memory: {{ .Values.app.resources.requests.memory }}
+        startupProbe:
+          httpGet:
+            path: /api/users
+            port: {{ .Values.app.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/users
+            port: {{ .Values.app.port }}
+          periodSeconds: 10
